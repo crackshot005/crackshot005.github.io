@@ -89,7 +89,7 @@
                     body: JSON.stringify({
                         model: "Qwen/Qwen2.5-7B-Instruct",
                         messages: chatHistory, 
-                        temperature: 0.95, 
+                        temperature: 0.9, 
                         max_tokens: 512
                     })
                 });
@@ -133,3 +133,34 @@
     </script>
 </body>
 </html>
+/* ✨ 手机端专属补丁（当屏幕宽度小于 768px 时生效） ✨ */
+@media screen and (max-width: 768px) {
+    body {
+        padding: 10px; /* 手机边缘留白小一点 */
+    }
+
+    /* 让对话框撑满宽度，不要太窄 */
+    .message {
+        max-width: 85%; 
+        font-size: 13px; /* 手机字稍微调小一点点更精致 */
+        padding: 10px 14px;
+    }
+
+    /* 输入区域固定在底部，防止被键盘顶飞 */
+    .input-area {
+        padding: 8px 12px;
+        gap: 5px;
+    }
+
+    #send-btn {
+        padding: 6px 15px;
+        font-size: 13px;
+    }
+
+    /* 关键：调整聊天容器高度，预留出输入框的位置 */
+    #chat-container {
+        margin-bottom: 10px;
+    }
+
+    /* 如果你想在手机上隐藏某些太占空间的元素，可以在这里设置 display: none; */
+}
