@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>SiliconFlow 信号测试</title>
+    <style>
+        body { background: #0b0b10; color: #fff; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background: #16161e; padding: 40px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); width: 100%; max-width: 500px; border: 1px solid #333; text-align: center; }
+        h2 { color: #58a6ff; margin-bottom: 10px; font-weight: 300; }
+        input { width: 100%; padding: 15px; margin-bottom: 15px; background: #000; border: 1px solid #444; color: #58a6ff; border-radius: 10px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background: #58a6ff; color: #000; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; }
+        button:disabled { background: #444; }
+        #log { margin-top: 30px; padding: 20px; background: #000; border-radius: 10px; text-align: left; font-size: 14px; line-height: 1.6; border: 1px solid #222; min-height: 100px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div style="font-size: 40px; margin-bottom: 20px;">⚡</div>
+    <h2>SiliconFlow 链路测试</h2>
+    <p>国内直连优化版</p>
+    
+    <input type="text" id="api-key" placeholder="在此粘贴你的 SiliconCloud API Key (sk-...)" value="">
+    <button id="send-btn" onclick="startTest()">发射信号 🚀</button>
+    
+    <div id="log">准备就绪。请输入 sk- 开头的 Key。</div>
+</div>
+
+<script>
+async function startTest() {
+    const key = document.getElementById('api-key').value.trim();
+    const log = document.getElementById('log');
+    const btn = document.getElementById('send-btn');
+
+    if (!key) { log.innerHTML = "⚠️ 请先输入 Key"; return; }
+
+    log.innerHTML = "正在连接 SiliconFlow 服务器...";
+    btn.disabled = true;
+
+    // SiliconFlow 标准接口地址
+    const url = "https://api.siliconflow.cn/v1/chat/completions";
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${key}`
+            },
+            body: JSON.stringify({
+                // 我们先用个便宜好使的模型测一下，比如 Qwen2.5 或 DeepSeek
+                model: "deepseek-ai/DeepSeek-V3", 
+                messages: [{ role: "user", content: "收到请回答：信号已同步！" }],
+                stream: false
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            const reply = data.choices[0].message.content;
+            log.innerHTML = `<b style="color:#6bffb8">✅ 成了！直连成功！</b><br><br><b>AI 回复：</b><br>${reply}`;
+        } else {
+            log.innerHTML = `<b style="color:#ff7242">❌ 接口报错</b><br><br>原因：${data.error ? data.error.message : JSON.stringify(data)}`;
+        }
+    } catch (e) {
+        log.innerHTML = `<b style="color:#ff7242">🚨 网络拦截</b><br><br>错误：${e.message}<br><br>建议：请检查是否关闭了所有的代理（梯子），SiliconFlow 在国内直连最稳！`;
+    } finally {
+        btn.disabled = false;
+    }
+}
+</script>
+
+</body>
+</html>
